@@ -94,6 +94,48 @@ class UserServices {
         }, process.env.REFRESH_SIGNATURE, { jwtid: (0, nanoid_1.nanoid)(), expiresIn: '7 D' });
         return (0, successHandler_1.successHandler)({ res, data: { accessToken, refreshToken } });
     };
+    forgetPassword = async (req, res) => {
+        const { email } = req.body;
+        const user = await this.userModel.findByEmail({ email });
+        if (!user) {
+            throw new Error_1.NotFoundException('user not found');
+        }
+        if (!user.isConfirmed) {
+            throw new Error_1.NotConfirmedException();
+        }
+        if (user.passwordOtp.expireAt.getTime() >= Date.now()) {
+            throw new Error_1.ExpiredOTPException('wait for 5 minutes');
+        }
+        const otp = (0, createOtp_1.createOtp)();
+        const subject = 'forget password';
+        const html = (0, generateHTML_1.template)({ code: otp, name: user.firstName, subject });
+        emailEvents_1.emailEmitter.publish('send-email-activation-code', { to: email, subject, html });
+        await this.userModel.update({ filter: { email }, data: { passwordOtp: { otp: await (0, hash_1.createHash)({ text: otp }), expireAt: new Date(Date.now() + (5 * 60 * 1000)) } } });
+        return (0, successHandler_1.successHandler)({ res });
+    };
+    changePassword = async (req, res) => {
+        const { email, otp, newPassword } = req.body;
+        const user = await this.userModel.findByEmail({ email });
+        if (!user) {
+            throw new Error_1.NotFoundException('user not found');
+        }
+        if (user.passwordOtp.expireAt.getTime() <= Date.now()) {
+            throw new Error_1.ExpiredOTPException('otp is expired');
+        }
+        const isMatch = await (0, hash_1.compareHash)({ text: otp, hash: user.passwordOtp.otp });
+        if (!isMatch) {
+            throw new Error_1.applicationError('invalid otp', 409);
+        }
+        await this.userModel.update({ filter: { email }, data: {
+                password: await (0, hash_1.createHash)({ text: newPassword }),
+                passwordOtp: {
+                    otp: '',
+                    expireAt: new Date()
+                },
+                isChangeCredentialsUpdated: new Date(Date.now())
+            } });
+        return (0, successHandler_1.successHandler)({ res });
+    };
     refreshToken = async (req, res) => {
         const authorization = req.headers.authorization;
         const { user, payload } = await (0, auth_middleware_1.decodeToken)({ authorization, tokenType: auth_middleware_1.tokenTypeEnum.refresh });

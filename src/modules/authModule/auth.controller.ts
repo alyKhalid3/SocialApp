@@ -10,6 +10,8 @@ router.post('/signup',validation(authValidation.signupSchema),userServices.signu
 router.patch('/confirm-email',validation(authValidation.confirmEmailSchema),userServices.confirmEmail)
 router.patch('/resend-otp',validation(authValidation.resendOtpSchema),userServices.resendOtp)
 router.post('/login',validation(authValidation.loginSchema),userServices.login)
+router.patch('/forget-password',validation(authValidation.forgotPasswordSchema),userServices.forgetPassword)
+router.patch('/change-password',validation(authValidation.changePasswordSchema),userServices.changePassword)
 router.post('/refresh-token',userServices.refreshToken)
 router.get('/me',auth(),userServices.getUser)
 

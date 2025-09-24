@@ -22,3 +22,6 @@ exports.emailEmitter = new UserEvents(emitter);
 exports.emailEmitter.subscripe('send-email-activation-code', async ({ to, subject, html }) => {
     await (0, sendEmail_1.sendEmail)({ to, subject, html });
 });
+exports.emailEmitter.subscripe('send-reset-password-code', async ({ to, subject, html }) => {
+    await (0, sendEmail_1.sendEmail)({ to, subject, html });
+});

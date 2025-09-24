@@ -3,7 +3,10 @@ import { createHash } from "../../utils/hash";
 import { promises } from "dns";
 
 
-
+type Otp={
+    otp:string,
+    expireAt:Date
+}
 
 export interface IUser{
    
@@ -11,12 +14,11 @@ export interface IUser{
     lastName:string,
     email:string,
     password:string,
-    emailOtp:{
-        otp:string,
-        expireAt:Date
-    },
+    emailOtp:Otp,
+    passwordOtp:Otp,
     phone:string,
-    isConfirmed:boolean
+    isConfirmed:boolean,
+    isChangeCredentialsUpdated:Date
 }
 
 
@@ -34,12 +36,17 @@ const userSchema=new Schema<IUser>({
         otp:{type:String},
         expireAt:{type:Date}
     },
+    passwordOtp:{
+        otp:{type:String},
+        expireAt:{type:Date}
+    },
     phone:{type:String}, 
-
+  
     isConfirmed:{
         type:Boolean,
         default:false
-    }
+    },
+    isChangeCredentialsUpdated:Date
 },{
     timestamps:true,
     toJSON:{virtuals:true},

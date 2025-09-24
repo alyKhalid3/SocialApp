@@ -15,11 +15,16 @@ const userSchema = new mongoose_1.Schema({
         otp: { type: String },
         expireAt: { type: Date }
     },
+    passwordOtp: {
+        otp: { type: String },
+        expireAt: { type: Date }
+    },
     phone: { type: String },
     isConfirmed: {
         type: Boolean,
         default: false
-    }
+    },
+    isChangeCredentialsUpdated: Date
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { IUser, userModel } from "../DB/models/user.model"
 import { UserRepo } from "../modules/authModule/auth.repo"
-import { InvalidTokenException, NotConfirmedException, NotFoundException } from "../utils/Error"
+import { applicationError, InvalidTokenException, NotConfirmedException, NotFoundException } from "../utils/Error"
 import { verifyJwt } from "../utils/jwt"
 import { HydratedDocument } from "mongoose"
 
@@ -30,6 +30,7 @@ const payload= verifyJwt(token,
    const user = await UserModel.findById({id:payload.id})
    if(!user)throw new NotFoundException('user not found')
     if(!user.isConfirmed)throw new NotConfirmedException()
+    if(user.isChangeCredentialsUpdated.getTime() >= payload.iat * 1000)throw new applicationError('please login again',400)
    return {user,payload}
  }
 

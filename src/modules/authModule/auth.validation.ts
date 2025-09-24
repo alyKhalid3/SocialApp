@@ -26,3 +26,14 @@ export const loginSchema=z.object({
     email:z.email(),
     password:z.string().min(8).max(20)
 })
+
+export const forgotPasswordSchema=z.object({
+    email:z.email()
+})
+
+export const changePasswordSchema=z.object({
+    email:z.email(),
+    otp:z.string(),
+    newPassword:z.string().min(8).max(20),
+   
+})

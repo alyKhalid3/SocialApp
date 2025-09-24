@@ -1,8 +1,8 @@
 import { decodeToken, payload, tokenTypeEnum } from './../../middleware/auth.middleware';
 import { NextFunction, Request, Response } from "express";
-import { applicationError, EmailIsExist, ExpiredOTPException, InvalidCredentialsException, NotConfirmedException } from "../../utils/Error";
+import { applicationError, EmailIsExist, ExpiredOTPException, InvalidCredentialsException, NotConfirmedException, NotFoundException } from "../../utils/Error";
 import { successHandler } from '../../utils/successHandler';
-import { confirmEmailDTO, loginDTO, resendOtpDTO, signupDTO } from './auth.DTO';
+import { ChangePasswordDTO, confirmEmailDTO, ForgetPasswordDTO, loginDTO, resendOtpDTO, signupDTO } from './auth.DTO';
 import { UserRepo } from './auth.repo';
 import { compareHash, createHash } from "../../utils/hash";
 import { createOtp } from "../../utils/sendEmail/createOtp";
@@ -101,6 +101,51 @@ export class UserServices implements IUserServices {
 
         return successHandler({ res, data: { accessToken, refreshToken } })
     }
+        forgetPassword = async (req: Request, res: Response): Promise<Response> => {
+        const {email}:ForgetPasswordDTO=req.body
+        const user=await this.userModel.findByEmail({email})
+        if(!user){
+        throw new NotFoundException('user not found')
+        }
+        if(!user.isConfirmed){
+            throw new NotConfirmedException()
+        }
+        if(user.passwordOtp.expireAt.getTime()>=Date.now()){
+            throw new ExpiredOTPException('wait for 5 minutes')
+        }
+        const otp=createOtp()
+        const subject='forget password'
+        const html=template({code:otp,name:user.firstName,subject})
+        emailEmitter.publish('send-email-activation-code',{to:email,subject,html})
+       await this.userModel.update({filter:{email},data:{passwordOtp:{otp:await createHash({text:otp}),expireAt:new Date(Date.now()+(5*60*1000))}}})
+        return successHandler({res})
+       
+    }
+    changePassword = async (req: Request, res: Response): Promise<Response> => {
+        const {email,otp,newPassword}:ChangePasswordDTO= req.body
+        const user=await this.userModel.findByEmail({email})
+        if(!user){
+            throw new NotFoundException('user not found')
+        }
+        if(user.passwordOtp.expireAt.getTime()<=Date.now()){
+            throw new ExpiredOTPException('otp is expired')
+        }
+        const isMatch=await compareHash({text:otp,hash:user.passwordOtp.otp})
+        if(!isMatch){
+            throw new applicationError('invalid otp',409)
+        }
+        await this.userModel.update({filter:{email},data:
+            {
+            password:await createHash({text:newPassword}),
+            passwordOtp:{
+                otp:'',
+                expireAt:new Date()
+            },
+            isChangeCredentialsUpdated:new Date(Date.now())
+        }})
+        return successHandler({res})
+        
+    }
     refreshToken = async (req: Request, res: Response): Promise<Response> => {
         const authorization = req.headers.authorization
         const { user, payload } = await decodeToken({ authorization, tokenType: tokenTypeEnum.refresh })
@@ -113,7 +158,7 @@ export class UserServices implements IUserServices {
         const user: IUser = res.locals.user
         return successHandler({ res, data: user })
     }
-
+    
 
 
 }
