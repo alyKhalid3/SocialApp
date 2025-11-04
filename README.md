@@ -1,5 +1,4 @@
-# SocialApp
-[![Ask DeepWiki](https://devin.ai/assets/askdeepwiki.png)](https://deepwiki.com/alyKhalid3/SocialApp)
+# SocialApp🌐
 
 SocialApp is a comprehensive social media backend application built with TypeScript, Node.js, and Express. It provides a robust foundation for a social platform, including features like user authentication, real-time chat, posts, comments, a friend system, and file uploads to AWS S3.
 
