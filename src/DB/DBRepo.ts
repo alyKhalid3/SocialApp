@@ -1,38 +1,62 @@
-import { HydratedDocument, Model ,FilterQuery,QueryOptions, FlattenMaps, ObjectId} from "mongoose";
+import { HydratedDocument, Model, FilterQuery, QueryOptions, FlattenMaps, ObjectId, UpdateQuery, MongooseBaseQueryOptionKeys, MongooseBaseQueryOptions, UpdateWriteOpResult } from "mongoose";
 import { IUser } from "./models/user.model";
+import { DeleteOptions, UpdateOptions } from "mongodb";
 
 export abstract class DBRepo<T> {
-    constructor(protected readonly model: Model<T>) { }
+  constructor(protected readonly model: Model<T>) { }
 
-    create = async({ data }: { data: Partial<T> }) : Promise < HydratedDocument<T> >=> {
-        const doc = await this.model.create(data)
+  create = async ({ data }: { data: Partial<T> }): Promise<HydratedDocument<T>> => {
+    const doc = await this.model.create(data)
     return doc
+  }
+  find = async ({ filter, projection, options }:
+    { filter: FilterQuery<T>, projection?: string, options?: QueryOptions<T> }): Promise<Array<FlattenMaps<HydratedDocument<T>> | HydratedDocument<T>>> => {
+    const query = this.model.find(filter, projection, options)
+    if (options?.lean) {
+      query.lean()
     }
-    findOne=async({filter,projection,options}:
-        {filter:FilterQuery<T>,projection?:string,options?:QueryOptions<T>}): Promise<FlattenMaps<HydratedDocument<T>>|HydratedDocument<T>|null>=>{
-      const query =this.model.findOne(filter,projection,options)
-      if(options?.lean){
-          query.lean()
-      }
-      const doc= await query.exec()
-      return doc
+    const doc = await query.exec()
+    return doc
+  }
+  findOne = async ({ filter, projection, options }:
+    { filter: FilterQuery<T>, projection?: string, options?: QueryOptions<T> }): Promise<FlattenMaps<HydratedDocument<T>> | HydratedDocument<T> | null> => {
+    let query = this.model.findOne(filter, projection, options)
+    if (options?.populate) {
+     query.populate(options.populate as any)
     }
-    update=async({ filter, data, options }:{ filter: FilterQuery<T>; data: Partial<T>; options?: QueryOptions<T>; }):Promise<FlattenMaps<HydratedDocument<T>>|HydratedDocument<T>|null>=>{
-      const query= this.model.findOneAndUpdate(filter,data,options)
-      if(options?.lean){
-          query.lean()
-      }
-      const doc=await query.exec()
-      return doc
+    if (options?.lean) {
+      query.lean()
     }
-       findById=async({id,projection,options}:
-        {id:string,projection?:string,options?:QueryOptions<T>}): Promise<FlattenMaps<HydratedDocument<T>>|HydratedDocument<T>|null>=>{
-      const query =this.model.findById(id,projection,options)
-      if(options?.lean){
-          query.lean()
-      }
-      const doc= await query.exec()
-      return doc
+    const doc = await query.exec()
+    return doc
+  }
+  update = async ({ filter,data, options }: { filter: FilterQuery<T>; data: UpdateQuery<T>; options?: QueryOptions<T>; }): Promise<FlattenMaps<HydratedDocument<T>> | HydratedDocument<T> | null> => {
+    const query = this.model.findOneAndUpdate(filter, data, options)
+    if (options?.lean) {
+      query.lean()
     }
-    
+    const doc = await query.exec()
+    return doc
+  }
+    updateMany = async ({ filter,data, options }: { filter: FilterQuery<T>; data: UpdateQuery<T>; options?:UpdateOptions & MongooseBaseQueryOptions<T>; }): Promise<FlattenMaps<HydratedDocument<T>> | HydratedDocument<T> | UpdateWriteOpResult|null> => {
+    const query = this.model.updateMany(filter, data,options)
+    const doc = await query.exec()
+    return doc
+  }
+  findById =async ({ id, projection, options }:
+    { id: string, projection?: string, options?: QueryOptions<T> }): Promise<FlattenMaps<HydratedDocument<T>> | HydratedDocument<T> | null> => {
+    const query = this.model.findById(id, projection, options)
+    if (options?.lean) {
+      query.lean()
+    }
+    const doc = await query.exec()
+    return doc
+  }
+  deleteMany = async ({ filter,options }:
+    { filter: FilterQuery<T>, options?:(DeleteOptions & MongooseBaseQueryOptions<T>) | null }): Promise<any> => {
+    const query = this.model.deleteMany(filter,options)
+    const doc = await query.exec()
+    return doc
+  }
+
 }

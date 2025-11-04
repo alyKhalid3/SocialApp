@@ -30,7 +30,7 @@ const payload= verifyJwt(token,
    const user = await UserModel.findById({id:payload.id})
    if(!user)throw new NotFoundException('user not found')
     if(!user.isConfirmed)throw new NotConfirmedException()
-    if(user.isChangeCredentialsUpdated.getTime() >= payload.iat * 1000)throw new applicationError('please login again',400)
+    if(user.isChangeCredentialsUpdated?.getTime() >= payload.iat * 1000)throw new applicationError('please login again',400)
    return {user,payload}
  }
 

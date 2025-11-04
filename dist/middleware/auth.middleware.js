@@ -27,7 +27,7 @@ const decodeToken = async ({ authorization, tokenType = tokenTypeEnum.access }) 
         throw new Error_1.NotFoundException('user not found');
     if (!user.isConfirmed)
         throw new Error_1.NotConfirmedException();
-    if (user.isChangeCredentialsUpdated.getTime() >= payload.iat * 1000)
+    if (user.isChangeCredentialsUpdated?.getTime() >= payload.iat * 1000)
         throw new Error_1.applicationError('please login again', 400);
     return { user, payload };
 };

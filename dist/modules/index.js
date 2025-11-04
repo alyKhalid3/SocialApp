@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.chatRoutes = exports.chatRouter = exports.commentRoutes = exports.commentRouter = exports.userRoutes = exports.userRouter = exports.postRoutes = exports.postRouter = exports.authRoutes = exports.authRouter = void 0;
+var authModule_1 = require("./authModule");
+Object.defineProperty(exports, "authRouter", { enumerable: true, get: function () { return authModule_1.authRouter; } });
+Object.defineProperty(exports, "authRoutes", { enumerable: true, get: function () { return authModule_1.authRoutes; } });
+var postModule_1 = require("./postModule");
+Object.defineProperty(exports, "postRouter", { enumerable: true, get: function () { return postModule_1.postRouter; } });
+Object.defineProperty(exports, "postRoutes", { enumerable: true, get: function () { return postModule_1.postRoutes; } });
+var userModule_1 = require("./userModule");
+Object.defineProperty(exports, "userRouter", { enumerable: true, get: function () { return userModule_1.userRouter; } });
+Object.defineProperty(exports, "userRoutes", { enumerable: true, get: function () { return userModule_1.userRoutes; } });
+var commentModule_1 = require("./commentModule");
+Object.defineProperty(exports, "commentRouter", { enumerable: true, get: function () { return commentModule_1.commentRouter; } });
+Object.defineProperty(exports, "commentRoutes", { enumerable: true, get: function () { return commentModule_1.commentRoutes; } });
+var chatModule_1 = require("./chatModule");
+Object.defineProperty(exports, "chatRouter", { enumerable: true, get: function () { return chatModule_1.chatRouter; } });
+Object.defineProperty(exports, "chatRoutes", { enumerable: true, get: function () { return chatModule_1.chatRoutes; } });

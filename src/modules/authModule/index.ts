@@ -1,0 +1,2 @@
+
+export { default as authRouter, authRoutes } from './auth.controller'

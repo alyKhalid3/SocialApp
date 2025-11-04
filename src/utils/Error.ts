@@ -52,3 +52,13 @@ export class InvalidTokenException extends applicationError{
         super(message,409)
     }
 }
+export class FileUploadException extends applicationError{
+    constructor(message='file upload error'){
+        super(message,400)
+    }
+}
+export class BadRequestException extends applicationError{
+    constructor(message:string){
+        super(message,500)
+    }
+}

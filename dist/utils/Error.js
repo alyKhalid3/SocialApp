@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvalidTokenException = exports.NotConfirmedException = exports.InvalidCredentialsException = exports.ExpiredOTPException = exports.NotFoundException = exports.EmailIsExist = exports.ValidationError = exports.applicationError = void 0;
+exports.BadRequestException = exports.FileUploadException = exports.InvalidTokenException = exports.NotConfirmedException = exports.InvalidCredentialsException = exports.ExpiredOTPException = exports.NotFoundException = exports.EmailIsExist = exports.ValidationError = exports.applicationError = void 0;
 class applicationError extends Error {
     statusCode;
     constructor(message, statusCode, Options) {
@@ -51,3 +51,15 @@ class InvalidTokenException extends applicationError {
     }
 }
 exports.InvalidTokenException = InvalidTokenException;
+class FileUploadException extends applicationError {
+    constructor(message = 'file upload error') {
+        super(message, 400);
+    }
+}
+exports.FileUploadException = FileUploadException;
+class BadRequestException extends applicationError {
+    constructor(message) {
+        super(message, 500);
+    }
+}
+exports.BadRequestException = BadRequestException;

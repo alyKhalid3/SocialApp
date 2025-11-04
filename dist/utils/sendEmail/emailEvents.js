@@ -25,3 +25,6 @@ exports.emailEmitter.subscripe('send-email-activation-code', async ({ to, subjec
 exports.emailEmitter.subscripe('send-reset-password-code', async ({ to, subject, html }) => {
     await (0, sendEmail_1.sendEmail)({ to, subject, html });
 });
+exports.emailEmitter.subscripe('enable-two-step-verification', async ({ to, subject, html }) => {
+    await (0, sendEmail_1.sendEmail)({ to, subject, html });
+});

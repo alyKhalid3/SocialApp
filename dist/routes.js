@@ -1,10 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const auth_controller_1 = __importDefault(require("./modules/authModule/auth.controller"));
+const modules_1 = require("./modules");
 const baseRouter = (0, express_1.Router)();
-baseRouter.use("/auth", auth_controller_1.default);
+baseRouter.use(modules_1.authRoutes.base, modules_1.authRouter);
+baseRouter.use(modules_1.postRoutes.base, modules_1.postRouter);
+baseRouter.use(modules_1.userRoutes.base, modules_1.userRouter);
+baseRouter.use(modules_1.commentRoutes.base, modules_1.commentRouter);
+baseRouter.use(modules_1.chatRoutes.base, modules_1.chatRouter);
 exports.default = baseRouter;

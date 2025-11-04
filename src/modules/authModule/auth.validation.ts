@@ -14,7 +14,7 @@ export const signupSchema=z.object({
 
 
 export const confirmEmailSchema=z.object({
-    otp:z.string(),
+    otp:z.string().length(6),
     email:z.email()
 })
 
@@ -33,7 +33,31 @@ export const forgotPasswordSchema=z.object({
 
 export const changePasswordSchema=z.object({
     email:z.email(),
-    otp:z.string(),
+    otp:z.string().length(6),
     newPassword:z.string().min(8).max(20),
    
 })
+
+
+export const updatePasswordSchema=z.object({
+    currentPassword:z.string().min(8).max(20),
+    newPassword:z.string().min(8).max(20),
+})
+
+export const updateInfoSchema=z.object({
+    firstName:z.string().min(3).max(20),
+    lastName:z.string().min(3).max(20),
+    phone:z.string()
+})
+
+
+export const updateEmailSchema=z.object({
+    email:z.email(),
+})
+
+export const confirmUpdateEmailSchema=z.object({
+    oldOtp:z.string().length(6),
+    newOtp:z.string().length(6),
+    email:z.email()
+})
+
